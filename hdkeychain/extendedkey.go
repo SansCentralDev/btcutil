@@ -422,6 +422,18 @@ func (k *ExtendedKey) String() string {
 	return base58.Encode(serializedBytes)
 }
 
+// VersionedStringFromExtendedKeyString allows versioning of serialised extended key seperately from network params
+// example: BIP 84 extended public keys have a prefix of 'zpub' while BIP 44 keys have 'ypub'
+// using this method it's possible to use the same key for different versions
+func VersionedStringFromExtendedKeyString(key string, version [4]byte) (string, error) {
+	k, err := NewKeyFromString(key)
+	if err != nil {
+		return "", err
+	}
+	k.version = version[:]
+	return k.String(), nil
+}
+
 // IsForNet returns whether or not the extended key is associated with the
 // passed bitcoin network.
 func (k *ExtendedKey) IsForNet(net *chaincfg.Params) bool {
